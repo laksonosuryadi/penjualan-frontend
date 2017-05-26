@@ -12,27 +12,33 @@ class Home extends React.Component {
   constructor(props){
     super(props)
     this.state = {
-      selected: 'A',
+      selected: 'key0',
       qty: '',
       cart: []
     }
   }
 
-  onValueChange (value: string) {
+  onValueChange (value) {
     this.setState({
         selected: value,
     });
   }
 
   onButtonPushed(value) {
-    var tmp = this.state.cart
-    tmp.push(value)
-    this.setState({
-      cart: tmp
-    })
-    console.log(value.quantity);
-    console.log(value.product);
-    console.log(this.state.cart);
+    if(this.state.selected !== 'key0'){
+      var tmp = this.state.cart
+      tmp.push(value)
+      this.setState({
+        cart: tmp
+      })
+
+      console.log("SELECTED PRODUCT : ", value.product);
+      console.log("WITH QUANTITY OF : ", value.quantity);
+      console.log("TOTAL PRODUCT IN CART NOW : ", this.state.cart.length);
+      console.log("WHATS IN CART NOW : ", this.state.cart);
+    } else {
+      console.log("YOU HAVEN'T SELECT ANYTHING YET!");
+    }
   }
 
   componentWillMount() {
@@ -47,20 +53,14 @@ class Home extends React.Component {
                mode="dropdown"
                selectedValue={this.state.selected}
                onValueChange={this.onValueChange.bind(this)}>
+                 <Item label="Select Product" value="key0" />
                { products.map(product => (
-                 <Item label={product.name} value={product.name} key={product._id}/>
+                 <Item label={product.name} value={product} key={product._id}/> //value diganti jadi product._id ??
                  ))
                }
           </Picker>
-          <Text>Selected: {this.state.selected}</Text>
-          <Text>Cart Length: {this.state.cart.length}</Text>
 
-          { this.state.cart.map( (isi,idx) => (
-            <View key={idx} style={{flexDirection:'row'}}>
-              <Text>Quantity: {isi.quantity},</Text>
-              <Text>Product: {isi.product}</Text>
-            </View>
-          ))}
+
 
           <Form>
             <Qty floatingLabel>
