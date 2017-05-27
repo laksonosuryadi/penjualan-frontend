@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { View, Text } from 'react-native'
+import { View, Text, DrawerLayoutAndroid, Image } from 'react-native'
 import { Container, Header, Left, Right, Body, Title, Content, Footer, Icon, Picker, Button, Item as Qty, Input, Label, Form, Toast } from 'native-base'
 const Item = Picker.Item;
 
@@ -19,6 +19,13 @@ class Home extends React.Component {
     }
   }
 
+  closeDrawer() {
+    this.drawer._root.close()
+  };
+  openDrawer() {
+    this.drawer._root.open()
+  };
+
   onValueChange (value) {
     this.setState({
         selected: value,
@@ -26,7 +33,7 @@ class Home extends React.Component {
   }
 
   addToCart(value) {
-    if(this.state.selected !== 'key0' && value.quantity !== '' && value.quantity !== 0){
+    if(this.state.selected !== 'key0' && value.quantity !== '' && value.quantity !== 0 && value.quantity !== null){
       const regex = new RegExp('^(?=.*[0-9])')
       if(regex.test(value.quantity)){
         var tmp = this.state.cart
@@ -35,7 +42,6 @@ class Home extends React.Component {
           cart: tmp,
           warning: ''
         })
-
         Toast.show({
           type: 'warning',
           duration: 4500,
@@ -79,6 +85,18 @@ class Home extends React.Component {
   checkout(value) {
     if(value.length !== 0) {
       this.props.postTransaction(value)
+      Toast.show({
+        type: 'success',
+        duration: 3500,
+        text: `Successfully Post a New Transaction!`,
+        position: 'bottom',
+        buttonText: 'OK'
+      })
+      this.setState({
+        selected: 'key0',
+        cart: [],
+        checkout: [],
+      })
     } else {
       Toast.show({
         type: 'danger',
@@ -96,62 +114,106 @@ class Home extends React.Component {
   }
 
   render() {
+    var navigationView = (
+     <View style={{flex: 1, backgroundColor: '#fff'}}>
+       <View style={{
+           height: 140,
+           backgroundColor: '#fff',
+           alignItems: 'center'}}>
+         <Image
+           style={{
+             marginTop:20,
+             width: 100,
+             height: 100,
+             alignItems: 'center',
+             resizeMode: 'contain'
+            }}
+           source={{uri: 'http://www.freeiconspng.com/uploads/point-of-sale-icon-9.png'}}
+         />
+       </View>
+       <Button full
+          style={{backgroundColor:'orange'}}
+          onPress={()=> Toast.show({
+               text: 'See Transaction Button Pushed!',
+               position: 'bottom',
+               buttonText: 'Okay'
+             })}>
+          <Text>See Transactions</Text>
+        </Button>
+     </View>
+   );
     const { products } = this.props
     return (
-      <Container>
-        <Header style={{backgroundColor:'maroon'}}>
-          <Body>
-              <Title>My-POS</Title>
-          </Body>
-        </Header>
-        <View style={{width:'80%', alignSelf:'center', marginTop:10, marginBottom:10}}>
-            <Picker
-              mode="dropdown"
-              selectedValue={this.state.selected}
-              onValueChange={this.onValueChange.bind(this)}>
-               <Item label="Select Product" value="key0" />
-                  { products.map(product => (
-                        <Item label={product.name} value={product} key={product._id}/>
-                      )
-                  )}
-            </Picker>
+      <DrawerLayoutAndroid
+        ref={c => this.drawer = c}
+        drawerWidth={200}
+        drawerPosition={DrawerLayoutAndroid.positions.Left}
+        renderNavigationView={() => navigationView}>
+        <Container>
+          <Header style={{backgroundColor:'maroon'}}>
+            <Left>
+              <Button transparent
+                onPress={ ()=> this.drawer.openDrawer()}
+                style={{
+                backgroundColor: 'maroon',
+              }}>
+                <Icon name="menu" color="white" size={22}
+                />
+              </Button>
+            </Left>
+            <Body style={{alignItems:'flex-end'}}>
+                <Title>My-POS</Title>
+            </Body>
+          </Header>
+          <View style={{width:'80%', alignSelf:'center', marginTop:10, marginBottom:10}}>
+              <Picker
+                mode="dropdown"
+                selectedValue={this.state.selected}
+                onValueChange={this.onValueChange.bind(this)}>
+                 <Item label="Select Product" value="key0" />
+                    { products.map(product => (
+                          <Item label={product.name} value={product} key={product._id}/>
+                        )
+                    )}
+              </Picker>
 
-            <Form style={{width:'95%'}}>
-              <Qty floatingLabel>
-                <Label>Quantity</Label>
-                <Input onChangeText={(qty) => this.setState({qty})} />
-              </Qty>
-            </Form>
-        </View>
-
-        <View style={{flexDirection:'row', justifyContent:'space-around'}}>
-            <Button onPress={() => this.addToCart({quantity:+(this.state.qty), product:this.state.selected})}
-                    style={{marginTop:10, borderRadius:100, width: 60, height: 60, backgroundColor:'orange'}}>
-               <Icon name='md-cart' />
-            </Button>
-
-            <Button onPress={() => this.checkout(this.state.checkout)}
-                    style={{marginTop:10, borderRadius:100, width: 60, height: 60, backgroundColor:'green'}}>
-              <Icon name='md-send' />
-            </Button>
-        </View>
-
-        { this.state.cart.length !== 0 &&
-          <View style={{marginTop:20, alignSelf:'center', borderWidth:1, borderRadius:20, padding: 20}}>
-              <Text style={{alignSelf:'center', fontSize:18, fontWeight:'bold', marginBottom:10}}>
-                CART ({this.state.cart.length})
-              </Text>
-              { this.state.cart.map((cartContent,idx) => (
-                <View style={{flexDirection:'row'}} key={idx}>
-                  <Text>{idx+1}.) </Text>
-                  <Text>Product: {cartContent.product.name},  </Text>
-                  <Text>Quantity: {cartContent.quantity},  </Text>
-                  <Text>Price: Rp {cartContent.product.price},-</Text>
-                </View>
-              ))}
+              <Form style={{width:'95%'}}>
+                <Qty floatingLabel>
+                  <Label>Quantity</Label>
+                  <Input onChangeText={(qty) => this.setState({qty})} />
+                </Qty>
+              </Form>
           </View>
-        }
-      </Container>
+
+          <View style={{flexDirection:'row', justifyContent:'space-around'}}>
+              <Button onPress={() => this.addToCart({quantity:+(this.state.qty), product:this.state.selected})}
+                      style={{marginTop:10, borderRadius:100, width: 60, height: 60, backgroundColor:'orange'}}>
+                 <Icon name='md-cart' />
+              </Button>
+
+              <Button onPress={() => this.checkout(this.state.checkout)}
+                      style={{marginTop:10, borderRadius:100, width: 60, height: 60, backgroundColor:'green'}}>
+                <Icon name='md-send' />
+              </Button>
+          </View>
+
+          { this.state.cart.length !== 0 &&
+            <View style={{marginTop:20, alignSelf:'center', borderWidth:1, borderRadius:20, padding: 20}}>
+                <Text style={{alignSelf:'center', fontSize:18, fontWeight:'bold', marginBottom:10}}>
+                  CART ({this.state.cart.length})
+                </Text>
+                { this.state.cart.map((cartContent,idx) => (
+                  <View style={{flexDirection:'row'}} key={idx}>
+                    <Text>{idx+1}.) </Text>
+                    <Text>Product: {cartContent.product.name},  </Text>
+                    <Text>Quantity: {cartContent.quantity},  </Text>
+                    <Text>Price: Rp {cartContent.product.price},-</Text>
+                  </View>
+                ))}
+            </View>
+          }
+        </Container>
+      </DrawerLayoutAndroid>
     )
   }
 }
