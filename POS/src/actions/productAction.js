@@ -10,7 +10,7 @@ export const fetchProductSuccess = (product) => ({
 export const fetchProduct = () => {
   return (
     dispatch => (
-      axios.get('http://penjualan-backend-prod.ap-southeast-1.elasticbeanstalk.com/products')
+      axios.get('http://pos-prod.ap-southeast-1.elasticbeanstalk.com/products')
       .then((res) => (dispatch(fetchProductSuccess(res.data))))
     )
   )

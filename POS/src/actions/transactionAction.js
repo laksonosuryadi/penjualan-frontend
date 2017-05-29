@@ -7,10 +7,11 @@ const postTransactionSuccess = (data) => ({
   payload: data
 })
 
-export const postTransaction = (cart) => (
+export const postTransaction = (checkoutCart, total) => (
   dispatch => (
-    axios.post('http://penjualan-backend-prod.ap-southeast-1.elasticbeanstalk.com/transactions', {
-      product_list: cart
+    axios.post('http://pos-prod.ap-southeast-1.elasticbeanstalk.com/transactions', {
+      product_list: checkoutCart,
+      total: total
     })
     .then((res) => dispatch(postTransactionSuccess(res.data)))
   )

@@ -16,6 +16,7 @@ class Home extends React.Component {
       qty: '',
       cart: [], //array of object which consist of Quantity and Object Product
       checkout: [], // array of object which consist of Quantity and Product._id, and this will be used on Checkout process
+      total: 0
     }
   }
 
@@ -32,23 +33,19 @@ class Home extends React.Component {
     });
   }
 
-  addToCart(value) {
-    if(this.state.selected !== 'key0' && value.quantity !== '' && value.quantity !== 0 && value.quantity !== null){
+  addToCart(objectInCart) {
+    if(this.state.selected !== 'key0' && objectInCart.quantity !== '' && objectInCart.quantity !== 0 && objectInCart.quantity !== null){
       const regex = new RegExp('^(?=.*[0-9])')
-      if(regex.test(value.quantity)){
+      if(regex.test(objectInCart.quantity)){
         var tmp = this.state.cart
-        tmp.push(value)
+        var newTotal = this.state.total + (objectInCart.quantity * objectInCart.product.price)
+
+        tmp.push(objectInCart)
         this.setState({
           cart: tmp,
-          warning: ''
-        })
-        Toast.show({
-          type: 'warning',
-          duration: 4500,
-          text: `Product ${value.product.name}, Quantity of ${value.quantity}, Added to Cart!`,
-          position: 'bottom',
-          buttonText: 'OK'
-        })
+          total: newTotal
+        }, () => console.log("TOTAL NOW: ", this.state.total))
+
       } else {
         Toast.show({
           type: 'danger',
@@ -60,15 +57,16 @@ class Home extends React.Component {
       }
 
       var tmpCheckout = this.state.checkout
-      tmpCheckout.push({quantity:value.quantity, product: value.product._id})
+      tmpCheckout.push({quantity:objectInCart.quantity, product: objectInCart.product._id})
       this.setState({
         checkout: tmpCheckout,
       })
 
-      console.log("SELECTED PRODUCT : ", value.product);
-      console.log("WITH QUANTITY OF : ", value.quantity);
+      console.log("SELECTED PRODUCT : ", objectInCart.product);
+      console.log("WITH QUANTITY OF : ", objectInCart.quantity);
       console.log("TOTAL PRODUCT IN CART NOW : ", this.state.cart.length);
       console.log("WHATS IN CART NOW : ", this.state.cart);
+
     } else {
       console.log("YOU HAVEN'T SELECT ANYTHING YET!");
 
@@ -82,9 +80,11 @@ class Home extends React.Component {
     }
   }
 
-  checkout(value) {
-    if(value.length !== 0) {
-      this.props.postTransaction(value)
+  checkout(checkoutCart, total) {
+    if(checkoutCart.length !== 0) {
+      this.props.postTransaction(checkoutCart, total)
+      console.log("TOTAL >>>>> ", total);
+      console.log("checkoutCart >>>>> ", checkoutCart);
       Toast.show({
         type: 'success',
         duration: 3500,
@@ -96,6 +96,7 @@ class Home extends React.Component {
         selected: 'key0',
         cart: [],
         checkout: [],
+        total: 0
       })
     } else {
       Toast.show({
@@ -106,7 +107,19 @@ class Home extends React.Component {
         buttonText: 'OK'
       })
     }
+  }
 
+  deleteItem(idx, cancelTotal) {
+    var deleteOneFromCart = this.state.cart
+    deleteOneFromCart.splice(idx, 1)
+    var deleteOneFromCheckout = this.state.checkout
+    deleteOneFromCheckout.splice(idx,1)
+    var updateTotal = this.state.total - cancelTotal
+    this.setState({
+      cart: deleteOneFromCart,
+      checkout: deleteOneFromCheckout,
+      total: updateTotal
+    })
   }
 
   componentWillMount() {
@@ -116,20 +129,9 @@ class Home extends React.Component {
   render() {
     var navigationView = (
      <View style={{flex: 1, backgroundColor: '#fff'}}>
-       <View style={{
-           height: 140,
-           backgroundColor: '#fff',
-           alignItems: 'center'}}>
-         <Image
-           style={{
-             marginTop:20,
-             width: 100,
-             height: 100,
-             alignItems: 'center',
-             resizeMode: 'contain'
-            }}
-           source={{uri: 'http://www.freeiconspng.com/uploads/point-of-sale-icon-9.png'}}
-         />
+       <View style={{height: 140, backgroundColor: '#fff', alignItems: 'center'}}>
+         <Image style={{marginTop:20, width: 100, height: 100, alignItems: 'center',resizeMode: 'contain'}}
+           source={{uri: 'http://www.freeiconspng.com/uploads/point-of-sale-icon-9.png'}}/>
        </View>
        <Button full
           style={{backgroundColor:'orange'}}
@@ -191,27 +193,39 @@ class Home extends React.Component {
                  <Icon name='md-cart' />
               </Button>
 
-              <Button onPress={() => this.checkout(this.state.checkout)}
+              <Button onPress={() => this.checkout(this.state.checkout, this.state.total)}
                       style={{marginTop:10, borderRadius:100, width: 60, height: 60, backgroundColor:'green'}}>
                 <Icon name='md-send' />
               </Button>
           </View>
 
           { this.state.cart.length !== 0 &&
-            <View style={{marginTop:20, alignSelf:'center', borderWidth:1, borderRadius:20, padding: 20}}>
+            <View style={{marginTop:10, alignSelf:'center', padding: 20}}>
                 <Text style={{alignSelf:'center', fontSize:18, fontWeight:'bold', marginBottom:10}}>
                   CART ({this.state.cart.length})
                 </Text>
+
                 { this.state.cart.map((cartContent,idx) => (
-                  <View style={{flexDirection:'row'}} key={idx}>
-                    <Text>{idx+1}.) </Text>
-                    <Text>Product: {cartContent.product.name},  </Text>
-                    <Text>Quantity: {cartContent.quantity},  </Text>
-                    <Text>Price: Rp {cartContent.product.price},-</Text>
+                  <View style={{flexDirection:'row', marginBottom:10, justifyContent:'space-around'}} key={idx}>
+                    <Text> {idx+1}.) </Text>
+                    <Text> {cartContent.product.name}, </Text>
+                    <Text> Qty: {cartContent.quantity}, </Text>
+                    <Text> Price: {cartContent.product.price}, </Text>
+                    <Text> Subtotal: {cartContent.quantity * cartContent.product.price} </Text>
+                    <View
+                      style={{borderWidth:1, borderRadius:10, width: 30, height: 23, backgroundColor:'red', marginLeft:10}}>
+                      <Icon name='md-trash'
+                      onPress={()=>this.deleteItem(idx, (cartContent.quantity * cartContent.product.price))}
+                      style={{color:'white', alignSelf:'center', fontSize:18}}/>
+                    </View>
                   </View>
                 ))}
+                <Text style={{alignSelf:'center', fontSize:18, fontWeight:'bold', marginTop:10}}>
+                  TOTAL : Rp {this.state.total},-
+                </Text>
             </View>
           }
+
         </Container>
       </DrawerLayoutAndroid>
     )
@@ -224,7 +238,7 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => ({
   fetchProduct: () => dispatch(fetchProduct()),
-  postTransaction: (arrOfObject) => dispatch(postTransaction(arrOfObject))
+  postTransaction: (checkoutCart, total) => dispatch(postTransaction(checkoutCart, total))
 })
 
 export default connect(mapStateToProps,mapDispatchToProps)(Home);
