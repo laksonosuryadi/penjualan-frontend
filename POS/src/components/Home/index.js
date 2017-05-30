@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { View, Text, DrawerLayoutAndroid, Image } from 'react-native'
+import { View, Text, DrawerLayoutAndroid, Image, Alert } from 'react-native'
 import { Container, Header, Left, Right, Body, Title, Content, Footer, Icon, Picker, Button, Item as Qty, Input, Label, Form, Toast } from 'native-base'
 const Item = Picker.Item;
 
@@ -47,13 +47,13 @@ class Home extends React.Component {
         }, () => console.log("TOTAL NOW: ", this.state.total))
 
       } else {
-        Toast.show({
-          type: 'danger',
-          duration: 4500,
-          text: `Please input number only for Quantity`,
-          position: 'bottom',
-          buttonText: 'OK'
-        })
+        Alert.alert(
+            'Error',
+            'Please input number only for Quantity',
+            [
+              {text: 'OK', onPress: () => console.log('OK Pressed!')},
+            ]
+          )
       }
 
       var tmpCheckout = this.state.checkout
@@ -69,14 +69,13 @@ class Home extends React.Component {
 
     } else {
       console.log("YOU HAVEN'T SELECT ANYTHING YET!");
-
-      Toast.show({
-        type: 'danger',
-        duration: 3500,
-        text: `Please input all fields`,
-        position: 'bottom',
-        buttonText: 'OK'
-      })
+      Alert.alert(
+          'Error',
+          'Please input all fields',
+          [
+            {text: 'OK', onPress: () => console.log('OK Pressed!')},
+          ]
+        )
     }
   }
 
@@ -85,13 +84,15 @@ class Home extends React.Component {
       this.props.postTransaction(checkoutCart, total)
       console.log("TOTAL >>>>> ", total);
       console.log("checkoutCart >>>>> ", checkoutCart);
-      Toast.show({
-        type: 'success',
-        duration: 3500,
-        text: `Successfully Post a New Transaction!`,
-        position: 'bottom',
-        buttonText: 'OK'
-      })
+
+      Alert.alert(
+          'Info',
+          'Successfully Post a New Transaction!',
+          [
+            {text: 'OK', onPress: () => console.log('OK Pressed!')},
+          ]
+        )
+
       this.setState({
         selected: 'key0',
         cart: [],
@@ -99,13 +100,13 @@ class Home extends React.Component {
         total: 0
       })
     } else {
-      Toast.show({
-        type: 'danger',
-        duration: 3500,
-        text: `You haven't add anything to Cart yet`,
-        position: 'bottom',
-        buttonText: 'OK'
-      })
+      Alert.alert(
+          'Error',
+          'You haven\'t add anything to Cart yet!',
+          [
+            {text: 'OK', onPress: () => console.log('OK Pressed!')},
+          ]
+        )
     }
   }
 
@@ -135,11 +136,7 @@ class Home extends React.Component {
        </View>
        <Button full
           style={{backgroundColor:'orange'}}
-          onPress={()=> Toast.show({
-               text: 'See Transaction Button Pushed!',
-               position: 'bottom',
-               buttonText: 'Okay'
-             })}>
+          onPress={()=>this.props.navigation.navigate('AllTransactions')}>
           <Text>See Transactions</Text>
         </Button>
      </View>

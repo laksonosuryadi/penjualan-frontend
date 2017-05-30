@@ -1,4 +1,4 @@
 import { fetchProduct } from './productAction';
-import { postTransaction } from './transactionAction';
+import { postTransaction, fetchTransaction, deleteTransaction } from './transactionAction';
 
-export { fetchProduct, postTransaction }
+export { fetchProduct, postTransaction, fetchTransaction, deleteTransaction }

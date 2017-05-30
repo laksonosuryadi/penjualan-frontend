@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-import { POST_TRANSACTION } from './constants'
+import { POST_TRANSACTION, FETCH_TRANSACTION, DELETE_TRANSACTION } from './constants'
 
 const postTransactionSuccess = (data) => ({
   type: POST_TRANSACTION,
@@ -16,3 +16,31 @@ export const postTransaction = (checkoutCart, total) => (
     .then((res) => dispatch(postTransactionSuccess(res.data)))
   )
 )
+
+export const fetchTransactionSuccess = (transaction) => ({
+  type: FETCH_TRANSACTION,
+  payload: transaction
+})
+
+export const fetchTransaction = () => {
+  return (
+    dispatch => (
+      axios.get('http://pos-prod.ap-southeast-1.elasticbeanstalk.com/transactions')
+      .then((res) => (dispatch(fetchTransactionSuccess(res.data))))
+    )
+  )
+}
+
+export const deleteTransactionSuccess = (id) => ({
+  type: DELETE_TRANSACTION,
+  payload: id
+})
+
+export const deleteTransaction = (id) => {
+  return (
+    dispatch => (
+      axios.delete(`http://pos-prod.ap-southeast-1.elasticbeanstalk.com/transactions/${id}`)
+      .then((res) => (dispatch(deleteTransactionSuccess(id))))
+    )
+  )
+}
