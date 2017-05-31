@@ -17,6 +17,7 @@ class TransactionsByDate extends React.Component {
       B: 0,
       C: 0,
       D: 0,
+      totalIncome: 0,
       date: 0,
       month: 0,
       year: 0,
@@ -80,7 +81,9 @@ class TransactionsByDate extends React.Component {
     var totalB = 0;
     var totalC = 0;
     var totalD = 0;
+    var totalIncome = 0;
     nextProps.transactions.forEach(transaction => {
+      totalIncome += transaction.total
       transaction.product_list.forEach(product => {
         if(product.product.category === 'food') {
           if(product.product.name == 'A') {
@@ -102,7 +105,8 @@ class TransactionsByDate extends React.Component {
       A: totalA,
       B: totalB,
       C: totalC,
-      D: totalD
+      D: totalD,
+      totalIncome: totalIncome
     })
   }
 
@@ -169,13 +173,17 @@ class TransactionsByDate extends React.Component {
             </View>
           ))}
           { this.state.A !== 0 &&
+            <View>
           <View style={{backgroundColor:'maroon', alignItems:'center', paddingTop:10, paddingBottom:10}}>
-            <Text
-              style={{color:'white'}}>TOTAL PRODUCT SOLD on {this.state.date} / {this.state.month} / {this.state.year} : </Text>
+            <Text style={{color:'white'}}>TOTAL PRODUCT SOLD on {this.state.date} / {this.state.month} / {this.state.year}: </Text>
             <Text style={{color:'white'}}>Product A : { this.state.A }</Text>
             <Text style={{color:'white'}}>Product B : { this.state.B }</Text>
             <Text style={{color:'white'}}>Product C : { this.state.C }</Text>
             <Text style={{color:'white'}}>Product D : { this.state.D }</Text>
+          </View>
+          <View style={{backgroundColor:'maroon', alignItems:'center', paddingTop:10, paddingBottom:10}}>
+            <Text style={{color:'white', fontSize:17}}>Total income on this day : Rp {this.state.totalIncome},-</Text>
+          </View>
           </View>
           }
         </ScrollView>
