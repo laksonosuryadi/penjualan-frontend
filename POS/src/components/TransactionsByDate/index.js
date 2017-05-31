@@ -66,41 +66,48 @@ class TransactionsByDate extends React.Component {
 
   deleteTrx(id){
     Alert.alert(
-            'Info',
-            'Are you sure want to delete this Transaction ?',
-            [
-              {text: 'Cancel', onPress: () => console.log('Cancel Pressed!')},
-              {text: 'OK', onPress: () => this.props.deleteTransaction(id)},
-            ]
-          )
+      'Info',
+      'Are you sure want to delete this Transaction ?',
+      [
+        {text: 'Cancel', onPress: () => console.log('Cancel Pressed!')},
+        {text: 'OK', onPress: () => this.props.deleteTransaction(id)},
+      ]
+    )
   }
 
-  addFood(product) {
-    if(product.product.name == 'A') {
-      var newA = this.state.A + product.quantity
-      this.setState({
-        A: newA
+  componentWillReceiveProps(nextProps) {
+    var totalA = 0;
+    var totalB = 0;
+    var totalC = 0;
+    var totalD = 0;
+    nextProps.transactions.forEach(transaction => {
+      transaction.product_list.forEach(product => {
+        if(product.product.category === 'food') {
+          if(product.product.name == 'A') {
+            totalA += product.quantity
+          } else {
+            totalB += product.quantity
+          }
+        } else if(product.product.category === 'drink'){
+          if(product.product.name == 'C') {
+            totalC += product.quantity
+          } else {
+            totalD += product.quantity
+          }
+        }
       })
-    } else {
-      var newB = this.state.B + product.quantity
-      this.setState({
-        B: newB
-      })
-    }
+    })
+
+    this.setState({
+      A: totalA,
+      B: totalB,
+      C: totalC,
+      D: totalD
+    })
   }
 
-  addDrink(product) {
-    if(product.product.name == 'C') {
-      var newC = this.state.C + product.quantity
-      this.setState({
-        C: newC
-      })
-    } else {
-      var newD = this.state.D + product.quantity
-      this.setState({
-        D: newD
-      })
-    }
+  componentWillMount() {
+    console.log("this.state.date on componentWillMount : ", this.state.date);
   }
 
   render() {
@@ -135,7 +142,7 @@ class TransactionsByDate extends React.Component {
         </View>
 
         <ScrollView>
-          { this.props.transactions.map((transaction, idx) => (
+          { this.state.date !==0 && this.props.transactions.map((transaction, idx) => (
             <View key={idx} style={{marginBottom:0, padding:20, borderWidth:1}}>
               <Text>Transaction No.: {idx+1}</Text>
               <Text style={{marginBottom:10}}>Created At: {transaction.date}-{transaction.month}-{transaction.year}</Text>
@@ -161,6 +168,16 @@ class TransactionsByDate extends React.Component {
               </Button>
             </View>
           ))}
+          { this.state.A !== 0 &&
+          <View style={{backgroundColor:'maroon', alignItems:'center', paddingTop:10, paddingBottom:10}}>
+            <Text
+              style={{color:'white'}}>TOTAL PRODUCT SOLD on {this.state.date} / {this.state.month} / {this.state.year} : </Text>
+            <Text style={{color:'white'}}>Product A : { this.state.A }</Text>
+            <Text style={{color:'white'}}>Product B : { this.state.B }</Text>
+            <Text style={{color:'white'}}>Product C : { this.state.C }</Text>
+            <Text style={{color:'white'}}>Product D : { this.state.D }</Text>
+          </View>
+          }
         </ScrollView>
       </Container>
     )

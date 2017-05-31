@@ -136,26 +136,25 @@ class Home extends React.Component {
         <Button full
           style={{backgroundColor:'red'}}
           onPress={()=>this.props.navigation.navigate('AllTransactions')}>
-          <Text style={{color:'white'}}>Show All Transactions</Text>
+          <Text style={{color:'white'}}>All Transactions</Text>
         </Button>
         <Button full
           style={{backgroundColor:'orange'}}
           onPress={()=>this.props.navigation.navigate('TodayTransactions')}>
-          <Text style={{color:'white'}}>Show Today Transactions</Text>
+          <Text style={{color:'white'}}>Today Transactions</Text>
         </Button>
         <Button full
           style={{backgroundColor:'green'}}
           onPress={()=>this.props.navigation.navigate('TransactionsByDate')}>
-          <Text style={{color:'white'}}>Show Transactions By Date</Text>
+          <Text style={{color:'white'}}>Transactions By Date</Text>
         </Button>
-
         <Button full
           style={{backgroundColor:'purple'}}>
-          <Text style={{color:'white'}}>Show Monthly Transactions</Text>
+          <Text style={{color:'white'}}>Monthly Transactions</Text>
         </Button>
         <Button full
           style={{backgroundColor:'blue'}}>
-          <Text style={{color:'white'}}>Show Yearly Transactions</Text>
+          <Text style={{color:'white'}}>Yearly Transactions</Text>
         </Button>
       </View>
     );

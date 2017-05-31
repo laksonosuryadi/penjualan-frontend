@@ -25,43 +25,46 @@ class TodayTransactions extends React.Component {
     this.props.fetchTodayTransaction(this.state.date, this.state.month, this.state.year)
   }
 
+  componentWillReceiveProps(nextProps) {
+    var totalA = 0;
+    var totalB = 0;
+    var totalC = 0;
+    var totalD = 0;
+    nextProps.transactions.forEach(transaction => {
+      transaction.product_list.forEach(product => {
+        if(product.product.category === 'food') {
+          if(product.product.name == 'A') {
+            totalA += product.quantity
+          } else {
+            totalB += product.quantity
+          }
+        } else if(product.product.category === 'drink'){
+          if(product.product.name == 'C') {
+            totalC += product.quantity
+          } else {
+            totalD += product.quantity
+          }
+        }
+      })
+    })
+
+    this.setState({
+      A: totalA,
+      B: totalB,
+      C: totalC,
+      D: totalD
+    })
+  }
+
   deleteTrx(id){
     Alert.alert(
-            'Info',
-            'Are you sure want to delete this Transaction ?',
-            [
-              {text: 'Cancel', onPress: () => console.log('Cancel Pressed!')},
-              {text: 'OK', onPress: () => this.props.deleteTransaction(id)},
-            ]
-          )
-  }
-
-  addFood(product) {
-    if(product.product.name == 'A') {
-      var newA = this.state.A + product.quantity
-      this.setState({
-        A: newA
-      })
-    } else {
-      var newB = this.state.B + product.quantity
-      this.setState({
-        B: newB
-      })
-    }
-  }
-
-  addDrink(product) {
-    if(product.product.name == 'C') {
-      var newC = this.state.C + product.quantity
-      this.setState({
-        C: newC
-      })
-    } else {
-      var newD = this.state.D + product.quantity
-      this.setState({
-        D: newD
-      })
-    }
+      'Info',
+      'Are you sure want to delete this Transaction ?',
+      [
+        {text: 'Cancel', onPress: () => console.log('Cancel Pressed!')},
+        {text: 'OK', onPress: () => this.props.deleteTransaction(id)},
+      ]
+    )
   }
 
   render() {
@@ -108,8 +111,16 @@ class TodayTransactions extends React.Component {
               </Button>
             </View>
           ))}
+          { this.state.A !== 0 &&
+          <View style={{backgroundColor:'maroon', alignItems:'center', paddingTop:10, paddingBottom:10}}>
+            <Text style={{color:'white'}}>TOTAL PRODUCT SOLD TODAY : </Text>
+            <Text style={{color:'white'}}>Product A : { this.state.A }</Text>
+            <Text style={{color:'white'}}>Product B : { this.state.B }</Text>
+            <Text style={{color:'white'}}>Product C : { this.state.C }</Text>
+            <Text style={{color:'white'}}>Product D : { this.state.D }</Text>
+          </View>
+          }
         </ScrollView>
-
       </Container>
     )
   }

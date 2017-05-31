@@ -24,41 +24,13 @@ class AllTransactions extends React.Component {
 
   deleteTrx(id){
     Alert.alert(
-            'Info',
-            'Are you sure want to delete this Transaction ?',
-            [
-              {text: 'Cancel', onPress: () => console.log('Cancel Pressed!')},
-              {text: 'OK', onPress: () => this.props.deleteTransaction(id)},
-            ]
-          )
-  }
-
-  addFood(product) {
-    if(product.product.name == 'A') {
-      var newA = this.state.A + product.quantity
-      this.setState({
-        A: newA
-      })
-    } else {
-      var newB = this.state.B + product.quantity
-      this.setState({
-        B: newB
-      })
-    }
-  }
-
-  addDrink(product) {
-    if(product.product.name == 'C') {
-      var newC = this.state.C + product.quantity
-      this.setState({
-        C: newC
-      })
-    } else {
-      var newD = this.state.D + product.quantity
-      this.setState({
-        D: newD
-      })
-    }
+      'Info',
+      'Are you sure want to delete this Transaction ?',
+      [
+        {text: 'Cancel', onPress: () => console.log('Cancel Pressed!')},
+        {text: 'OK', onPress: () => this.props.deleteTransaction(id)},
+      ]
+    )
   }
 
   render() {
@@ -106,7 +78,6 @@ class AllTransactions extends React.Component {
             </View>
           ))}
         </ScrollView>
-
       </Container>
     )
   }
