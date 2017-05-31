@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-import { POST_TRANSACTION, FETCH_TRANSACTION, DELETE_TRANSACTION, FETCH_TODAY_TRANSACTION } from './constants'
+import { POST_TRANSACTION, FETCH_TRANSACTION, DELETE_TRANSACTION, FETCH_TODAY_TRANSACTION, FETCH_TRANSACTION_BY_DATE } from './constants'
 
 const postTransactionSuccess = (data) => ({
   type: POST_TRANSACTION,
@@ -55,6 +55,20 @@ export const fetchTodayTransaction = (date, month, year) => {
     dispatch => (
       axios.get(`http://pos-prod.ap-southeast-1.elasticbeanstalk.com/transactions/${date}/${month}/${year}`)
       .then((res) => (dispatch(fetchTodayTransactionSuccess(res.data))))
+    )
+  )
+}
+
+export const fetchTransactionByDateSuccess = (transaction) => ({
+  type: FETCH_TRANSACTION_BY_DATE,
+  payload: transaction
+})
+
+export const fetchTransactionByDate = (date, month, year) => {
+  return (
+    dispatch => (
+      axios.get(`http://pos-prod.ap-southeast-1.elasticbeanstalk.com/transactions/${date}/${month}/${year}`)
+      .then((res) => (dispatch(fetchTransactionByDateSuccess(res.data))))
     )
   )
 }

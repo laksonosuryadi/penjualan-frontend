@@ -144,15 +144,17 @@ class Home extends React.Component {
           <Text style={{color:'white'}}>Show Today Transactions</Text>
         </Button>
         <Button full
-          style={{backgroundColor:'green'}}>
+          style={{backgroundColor:'green'}}
+          onPress={()=>this.props.navigation.navigate('TransactionsByDate')}>
           <Text style={{color:'white'}}>Show Transactions By Date</Text>
         </Button>
+
         <Button full
-          style={{backgroundColor:'blue'}}>
+          style={{backgroundColor:'purple'}}>
           <Text style={{color:'white'}}>Show Monthly Transactions</Text>
         </Button>
         <Button full
-          style={{backgroundColor:'purple'}}>
+          style={{backgroundColor:'blue'}}>
           <Text style={{color:'white'}}>Show Yearly Transactions</Text>
         </Button>
       </View>
