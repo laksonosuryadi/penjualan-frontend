@@ -5,21 +5,24 @@ import { Container, Header, Left, Right, Body, Title, Content, Footer, Icon, Pic
 
 import { connect } from 'react-redux'
 
-import { fetchTransaction, deleteTransaction } from '../../actions';
+import { fetchTodayTransaction, deleteTransaction } from '../../actions';
 
-class AllTransactions extends React.Component {
+class TodayTransactions extends React.Component {
   constructor(props){
     super(props)
     this.state = {
       A: 0,
       B: 0,
       C: 0,
-      D: 0
+      D: 0,
+      date: (new Date).getDate(),
+      month: ((new Date).getMonth())+1,
+      year: (new Date).getFullYear()
     }
   }
 
   componentWillMount() {
-    this.props.fetchTransaction()
+    this.props.fetchTodayTransaction(this.state.date, this.state.month, this.state.year)
   }
 
   deleteTrx(id){
@@ -64,22 +67,22 @@ class AllTransactions extends React.Component {
   render() {
     return (
       <Container>
-        <Header style={{backgroundColor:'red'}}>
+        <Header style={{backgroundColor:'orange'}}>
         <Left>
           <Button transparent
             onPress={ ()=> this.props.navigation.goBack()}
             style={{
-            backgroundColor: 'red',
+            backgroundColor: 'orange',
           }}>
             <Icon name="md-arrow-back" color="white" size={22}/>
           </Button>
         </Left>
           <Body style={{alignItems:'flex-end'}}>
-              <Title>All Transactions</Title>
+              <Title>Today Transactions</Title>
           </Body>
         </Header>
         <ScrollView>
-          { this.props.transactions.length == 0 ? <Spinner color='red' /> : this.props.transactions.map((transaction, idx) => (
+          { this.props.transactions.map((transaction, idx) => (
             <View key={idx} style={{marginBottom:0, padding:20, borderWidth:1}}>
               <Text>Transaction No.: {idx+1}</Text>
               <Text style={{marginBottom:10}}>Created At: {transaction.date}-{transaction.month}-{transaction.year}</Text>
@@ -117,8 +120,8 @@ const mapStateToProps = state => ({
 })
 
 const mapDispatchToProps = dispatch => ({
-  fetchTransaction: () => dispatch(fetchTransaction()),
+  fetchTodayTransaction: (date, month, year) => dispatch(fetchTodayTransaction(date, month, year)),
   deleteTransaction: (id) => dispatch(deleteTransaction(id))
 })
 
-export default connect(mapStateToProps,mapDispatchToProps)(AllTransactions);
+export default connect(mapStateToProps,mapDispatchToProps)(TodayTransactions);

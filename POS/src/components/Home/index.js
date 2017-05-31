@@ -46,6 +46,12 @@ class Home extends React.Component {
           total: newTotal
         }, () => console.log("TOTAL NOW: ", this.state.total))
 
+        var tmpCheckout = this.state.checkout
+        tmpCheckout.push({quantity:objectInCart.quantity, product: objectInCart.product._id})
+        this.setState({
+          checkout: tmpCheckout,
+        })
+
       } else {
         Alert.alert(
             'Error',
@@ -55,12 +61,6 @@ class Home extends React.Component {
             ]
           )
       }
-
-      var tmpCheckout = this.state.checkout
-      tmpCheckout.push({quantity:objectInCart.quantity, product: objectInCart.product._id})
-      this.setState({
-        checkout: tmpCheckout,
-      })
 
       console.log("SELECTED PRODUCT : ", objectInCart.product);
       console.log("WITH QUANTITY OF : ", objectInCart.quantity);
@@ -84,7 +84,6 @@ class Home extends React.Component {
       this.props.postTransaction(checkoutCart, total)
       console.log("TOTAL >>>>> ", total);
       console.log("checkoutCart >>>>> ", checkoutCart);
-
       Alert.alert(
           'Info',
           'Successfully Post a New Transaction!',
@@ -129,23 +128,40 @@ class Home extends React.Component {
 
   render() {
     var navigationView = (
-     <View style={{flex: 1, backgroundColor: '#fff'}}>
-       <View style={{height: 140, backgroundColor: '#fff', alignItems: 'center'}}>
-         <Image style={{marginTop:20, width: 100, height: 100, alignItems: 'center',resizeMode: 'contain'}}
-           source={{uri: 'http://www.freeiconspng.com/uploads/point-of-sale-icon-9.png'}}/>
-       </View>
-       <Button full
-          style={{backgroundColor:'orange'}}
+      <View style={{flex: 1, backgroundColor: '#fff'}}>
+        <View style={{height: 140, backgroundColor: '#fff', alignItems: 'center'}}>
+          <Image style={{marginTop:20, width: 100, height: 100, alignItems: 'center',resizeMode: 'contain'}}
+            source={{uri: 'http://www.freeiconspng.com/uploads/point-of-sale-icon-9.png'}}/>
+        </View>
+        <Button full
+          style={{backgroundColor:'red'}}
           onPress={()=>this.props.navigation.navigate('AllTransactions')}>
-          <Text>See Transactions</Text>
+          <Text style={{color:'white'}}>Show All Transactions</Text>
         </Button>
-     </View>
-   );
+        <Button full
+          style={{backgroundColor:'orange'}}
+          onPress={()=>this.props.navigation.navigate('TodayTransactions')}>
+          <Text style={{color:'white'}}>Show Today Transactions</Text>
+        </Button>
+        <Button full
+          style={{backgroundColor:'green'}}>
+          <Text style={{color:'white'}}>Show Transactions By Date</Text>
+        </Button>
+        <Button full
+          style={{backgroundColor:'blue'}}>
+          <Text style={{color:'white'}}>Show Monthly Transactions</Text>
+        </Button>
+        <Button full
+          style={{backgroundColor:'purple'}}>
+          <Text style={{color:'white'}}>Show Yearly Transactions</Text>
+        </Button>
+      </View>
+    );
     const { products } = this.props
     return (
       <DrawerLayoutAndroid
         ref={c => this.drawer = c}
-        drawerWidth={200}
+        drawerWidth={230}
         drawerPosition={DrawerLayoutAndroid.positions.Left}
         renderNavigationView={() => navigationView}>
         <Container>
@@ -186,13 +202,15 @@ class Home extends React.Component {
 
           <View style={{flexDirection:'row', justifyContent:'space-around'}}>
               <Button onPress={() => this.addToCart({quantity:+(this.state.qty), product:this.state.selected})}
-                      style={{marginTop:10, borderRadius:100, width: 60, height: 60, backgroundColor:'orange'}}>
-                 <Icon name='md-cart' />
+                      style={{marginTop:10, borderRadius:100, width: 130, height: 60, backgroundColor:'orange'}}>
+                <Text style={{color:'white'}}>Add To Cart </Text>
+                <Icon name='md-cart' />
               </Button>
 
               <Button onPress={() => this.checkout(this.state.checkout, this.state.total)}
-                      style={{marginTop:10, borderRadius:100, width: 60, height: 60, backgroundColor:'green'}}>
+                      style={{marginTop:10, borderRadius:100, width: 130, height: 60, backgroundColor:'green'}}>
                 <Icon name='md-send' />
+                <Text style={{color:'white'}}> Checkout</Text>
               </Button>
           </View>
 
